@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IntelliTraffic Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <h1>IntelliTraffic Dashboard</h1>
+            <h5 class="text-secondary">Smart Traffic Signal Controller</h5>
+        </div>
+        <div class="d-flex justify-content-end mb-3 gap-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="themeToggle">
+                <label class="form-check-label" for="themeToggle">Night Mode</label>
+            </div>
+        </div>
+        <div class="upload-section mb-4">
+            <label for="image-upload" class="form-label">Upload Traffic Image:</label>
+            <input type="file" id="image-upload" accept="image/*" class="form-control w-auto d-inline-block" />
+            <button id="use-sample-btn" class="btn btn-secondary ms-2">Use Sample Data</button>
+        </div>
+        <div class="text-center my-3">
+            <img id="uploaded-image" src="" alt="Uploaded Traffic" style="max-width: 400px; display: none; border: 2px solid #ccc;"/>
+        </div>
+        <div id="lane-summary" class="text-center my-3"></div>
+        <div id="object-info" class="text-center my-3"></div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card lane-panel">
+                    <div class="card-body text-center">
+                        <h4>Lane A</h4>
+                        <div class="signal-indicator" id="signalA"></div>
+                        <div class="display-5" id="vehicleA">0</div>
+                        <div>Vehicles</div>
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">Time Left: <span id="timerA">0</span>s</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge" id="statusA">RED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card lane-panel">
+                    <div class="card-body text-center">
+                        <h4>Lane B</h4>
+                        <div class="signal-indicator" id="signalB"></div>
+                        <div class="display-5" id="vehicleB">0</div>
+                        <div>Vehicles</div>
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">Time Left: <span id="timerB">0</span>s</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge" id="statusB">RED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card lane-panel">
+                    <div class="card-body text-center">
+                        <h4>Lane C</h4>
+                        <div class="signal-indicator" id="signalC"></div>
+                        <div class="display-5" id="vehicleC">0</div>
+                        <div>Vehicles</div>
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">Time Left: <span id="timerC">0</span>s</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge" id="statusC">RED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card lane-panel">
+                    <div class="card-body text-center">
+                        <h4>Lane D</h4>
+                        <div class="signal-indicator" id="signalD"></div>
+                        <div class="display-5" id="vehicleD">0</div>
+                        <div>Vehicles</div>
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">Time Left: <span id="timerD">0</span>s</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge" id="statusD">RED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4 g-4">
+            <div class="col-12">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+        <div id="result-message" class="mt-4 text-center"></div>
+    </div>
+    <!-- Static Traffic Icons Decor -->
+    <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="static-icon" style="position:fixed; top:30px; left:30px; width:48px; z-index:10;">
+    <img src="https://cdn-icons-png.flaticon.com/512/854/854894.png" class="static-icon" style="position:fixed; top:30px; right:30px; width:48px; z-index:10;">
+    <img src="https://cdn-icons-png.flaticon.com/512/854/854893.png" class="static-icon" style="position:fixed; bottom:30px; left:30px; width:48px; z-index:10;">
+    <img src="https://cdn-icons-png.flaticon.com/512/854/854885.png" class="static-icon" style="position:fixed; bottom:30px; right:30px; width:48px; z-index:10;">
+    <!-- Ownership Footer -->
+    <div class="site-footer">
+        Site owned by Abhiyanshu Anand and Abhishek Singh
+    </div>
+    <script src="script.js"></script>
+    <script>
+    function uploadImage() {
+        const input = document.getElementById('image-upload');
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+
+        fetch('http://127.0.0.1:5000/api/traffic', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data); // Show the result on your site
+            // Display data on your site as needed
+        });
+    }
+    </script>
+</body>
+</html>
