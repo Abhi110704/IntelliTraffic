@@ -1,6 +1,6 @@
 flask
 flask-cors
-ultralytics
+torch
+opencv-python
 pillow
-numpy
-requests
+ultralytics
