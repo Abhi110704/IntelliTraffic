@@ -1,39 +1,64 @@
 # 🚦 IntelliTraffic - Intelligent Traffic Signal Control System
 
-IntelliTraffic is a smart traffic management application that uses real-time computer vision (via YOLOv8) and Python (Flask) to analyze live vehicle data from traffic feeds and dynamically assign signal priorities across multiple lanes. This helps optimize traffic flow and reduce congestion, especially in urban settings.
+**IntelliTraffic** is a smart traffic management system that uses real-time computer vision (YOLOv8) and Python (Flask or Streamlit) to analyze live vehicle data and assign traffic signals dynamically. It helps optimize urban traffic flow and reduce congestion efficiently.
 
 ---
 
 ## 🌟 Features
 
 - 🔍 Real-time object detection using YOLOv8  
-- 📸 Accepts uploaded traffic camera images  
-- 🛑 Assigns RED, GREEN, YELLOW signals to each lane based on vehicle count  
-- 🚑 Detects emergency vehicles (ambulance, police car, fire truck) and responds accordingly  
-- 📊 Displays detected object types and counts  
-- 🌐 Simple frontend interface connected via REST API  
-- 🧪 Returns realistic sample data if no image is provided  
+- 📸 Upload traffic camera images or use fallback sample data  
+- 🚥 Dynamic traffic signal assignment (RED, YELLOW, GREEN)  
+- 🚑 Emergency vehicle detection (ambulance, police car, fire truck)  
+- 📊 Lane-wise vehicle count and object type summary  
+- 🌐 Simple HTML frontend via Flask + optional Streamlit dashboard  
+- 🧠 Intelligent fallback logic when no image is uploaded  
 
 ---
 
-## 🚀 Getting Started
+## 🗂 Project Structure
+
+```
+IntelliTraffic/
+├── backend/
+│   ├── app.py               # Flask backend
+│   ├── requirements.txt     # Backend dependencies
+│   ├── streamlit_app.py     # Optional Streamlit frontend
+│   └── models/
+│       └── yolov8n.pt       # YOLOv8n model
+├── frontend/
+│   ├── index.html           # Main frontend UI
+│   ├── script.js
+│   └── style.css
+├── README.md
+└── Sample.jpeg
+```
+
+---
+
+## 🚀 Getting Started (Local)
 
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/IntelliTraffic.git
-cd IntelliTraffic
+cd IntelliTraffic/backend
 ```
 
-### 2. Install Python Dependencies
+### 2. Create a Virtual Environment (Optional but Recommended)
 
-Make sure you have Python 3.8+ installed, then run:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scriptsctivate
+```
+
+### 3. Install Python Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Start the Backend Server
+### 4. Run the Flask Backend
 
 ```bash
 python app.py
@@ -41,39 +66,83 @@ python app.py
 
 Visit: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
+### 5. View Frontend
+
+Open `frontend/index.html` directly in your browser **OR** use Flask APIs to power it with backend results.
+
+---
+
+## 🌈 Optional: Streamlit Interface
+
+To run the Streamlit dashboard:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Visit: [http://localhost:8501](http://localhost:8501)
+
 ---
 
 ## 🧠 How It Works
 
-1. Frontend sends an image to the `/api/traffic` endpoint.  
-2. YOLOv8 detects objects and assigns them to one of four lanes.  
-3. Based on vehicle counts:
-   - Most crowded → GREEN  
-   - Second most → YELLOW  
-   - Others → RED  
-4. Emergency vehicles can override normal logic.  
-5. Backend returns signal and object data for frontend display.  
+1. Frontend or Streamlit sends an image to the backend.
+2. YOLOv8 detects vehicle objects in 4 vertical lanes.
+3. Signals are assigned:
+   - Highest vehicle count → GREEN  
+   - Second highest → YELLOW  
+   - Remaining → RED
+4. Emergency vehicles can override normal logic.
+5. The response includes signals, object counts, and confidence.
 
 ---
 
-## 🧪 Demo Without Image
+## 🧪 No Image? No Problem!
 
-If no image is provided, the backend returns realistic random traffic data to simulate real conditions.
+If no image is uploaded, the backend returns a simulated traffic data sample for demo/testing.
 
 ---
 
-## 📷 YOLOv8 Model Notes
+## 📷 Model Info
 
-- Uses `yolov8n.pt` model (auto-downloaded if missing).  
-- To train your own model:
+- Default model: `yolov8n.pt` (auto-downloads if missing)
+- You can replace it with a trained model in the `models/` folder
+- To train your own:
   - Use `vehicle_dataset.yaml`
   - Follow [Ultralytics YOLOv8 Docs](https://docs.ultralytics.com)
 
 ---
 
+## 📦 Deployment (Render.com)
+
+### ✅ Quick Steps
+
+1. **Push your project to GitHub**  
+2. **Create `requirements.txt` (already present)**  
+3. **Add `render.yaml`** (optional):
+
+```yaml
+services:
+  - type: web
+    name: intellitraffic
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+```
+
+4. **Go to [Render](https://render.com)**  
+   - Click "New Web Service"  
+   - Connect your GitHub repo  
+   - Set:
+     - Build command: `pip install -r requirements.txt`
+     - Start command: `python app.py`
+     - Runtime: Python 3.x
+
+---
+
 ## 📌 Dependencies
 
-```
+```text
 flask
 flask-cors
 torch
@@ -82,7 +151,7 @@ pillow
 ultralytics
 ```
 
-Install them using:
+To install:
 
 ```bash
 pip install -r requirements.txt
@@ -90,50 +159,14 @@ pip install -r requirements.txt
 
 ---
 
-## 📦 Deployment (Render)
+## 🙌 Contributions
 
-### Steps:
-
-1. **Push to GitHub**  
-   Ensure your project is fully committed.
-
-2. **Create `requirements.txt`**  
-   Include all Python dependencies listed above.
-
-   Or auto-generate:
-   ```bash
-   pip freeze > requirements.txt
-   ```
-
-3. **(Optional) Add `render.yaml`**  
-
-   ```yaml
-   services:
-     - type: web
-       name: intellitraffic
-       env: python
-       buildCommand: pip install -r requirements.txt
-       startCommand: python app.py
-   ```
-
-4. **Deploy on [Render](https://render.com)**  
-   - Click "New Web Service"  
-   - Connect GitHub repo  
-   - Set:
-     - Build command: `pip install -r requirements.txt`  
-     - Start command: `python app.py`  
-     - Environment: Python 3.x  
-
----
-
-## 🤝 Contributions
-
-Pull requests are welcome! For major changes, open an issue first to discuss what you want to modify.
+Pull requests are welcome. If you'd like to propose major changes, please open an issue first to discuss.
 
 ---
 
 ## 📄 License
 
-This project is open-source under the **MIT License**.
+Licensed under the **MIT License** – feel free to use and modify it.
 
 ---
