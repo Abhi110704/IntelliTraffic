@@ -4,3 +4,4 @@ services:
     env: python
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && python app.py
+    region: oregon
