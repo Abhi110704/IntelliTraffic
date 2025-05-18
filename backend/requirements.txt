@@ -4,3 +4,5 @@ torch
 opencv-python
 pillow
 ultralytics
+streamlit
+requests
